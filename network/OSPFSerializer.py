@@ -1,7 +1,7 @@
 
 class OSPFSerializer:
     '''
-    http://www.freesoft.org/CIE/RFC/1583/103.htm
+        http://www.freesoft.org/CIE/RFC/1583/103.htm
 
             0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -196,3 +196,4 @@ class OSPFSerializer:
         returnValue = OSPFSerializer.serializeOSPFPacket(ospfLinkStateACKPacket)
 
         return returnValue
+    
