@@ -11,9 +11,9 @@ Backup designated router    IP address of the backup designated router.
 Neighbor                    IP addresses of the routers from which valid hello packets have been received within the time specified by the router dead interval.
 '''
 class OSPFHelloPacket(OSPFPacket):
-    def __init(self, version, type, length, routerID, areaID, checksum, authType, authentication1, authentication2, instanceID,
+    def __init(self, version, length, routerID, areaID, checksum, authType, authentication1, authentication2, instanceID,
                networkMask, helloInterval, options, routerPriority, routerDeadInterval, designatedRouter, backupDesignatedRouter, neighbor):
-        OSPFPacket.__init__(version, type, length, routerID, areaID, checksum, authType, authentication1, authentication2, instanceID)
+        OSPFPacket.__init__(version, 1, length, routerID, areaID, checksum, authType, authentication1, authentication2, instanceID)
         self.networkMask = networkMask
         self.helloInterval = helloInterval
         self.options = options
