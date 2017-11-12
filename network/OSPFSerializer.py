@@ -7,7 +7,7 @@ class OSPFSerializer:
             0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |   Version #   |     Type      |         Packet length         |
+       |   Version #   |     Type      |         Header length         |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                          Router ID                            |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -20,23 +20,23 @@ class OSPFSerializer:
        |                       Authentication                          |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    '''
-    def serializeOSPFPacket(ospfPacket):
+    def serializeOSPFHeader(ospfHeader):
         return pack("!BBHLLHHLL",
-             ospfPacket.version,
-             ospfPacket.type,
-             ospfPacket.length,
-             ospfPacket.routerID,
-             ospfPacket.areaID,
-             ospfPacket.checksum,
-             ospfPacket.authType,
-             ospfPacket.authentication1,
-             ospfPacket.authentication2)
+             ospfHeader.version,
+             ospfHeader.type,
+             ospfHeader.length,
+             ospfHeader.routerID,
+             ospfHeader.areaID,
+             ospfHeader.checksum,
+             ospfHeader.authType,
+             ospfHeader.authentication1,
+             ospfHeader.authentication2)
 
     '''
             0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |   Version #   |       1       |         Packet length         |
+       |   Version #   |       1       |         Header length         |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                          Router ID                            |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -62,23 +62,23 @@ class OSPFSerializer:
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                              ...                              |
     '''
-    def serializeOSPFHelloPacket(ospfHelloPacket):
+    def serializeOSPFHelloHeader(ospfHelloHeader):
         result = pack("!4sHBBL4s4s4s",
-                      ospfHelloPacket.networkMask,
-                      ospfHelloPacket.helloInterval,
-                      ospfHelloPacket.options,
-                      ospfHelloPacket.routerPriority,
-                      ospfHelloPacket.routerDeadInterval,
-                      ospfHelloPacket.designatedRouter,
-                      ospfHelloPacket.backupDesignatedRouter,
-                      ospfHelloPacket.neighbor)
-        return OSPFSerializer.serializeOSPFPacket(ospfHelloPacket) + result
+                      ospfHelloHeader.networkMask,
+                      ospfHelloHeader.helloInterval,
+                      ospfHelloHeader.options,
+                      ospfHelloHeader.routerPriority,
+                      ospfHelloHeader.routerDeadInterval,
+                      ospfHelloHeader.designatedRouter,
+                      ospfHelloHeader.backupDesignatedRouter,
+                      ospfHelloHeader.neighbor)
+        return OSPFSerializer.serializeOSPFHeader(ospfHelloHeader) + result
 
     '''
             0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |   Version #   |       2       |         Packet length         |
+       |   Version #   |       2       |         Header length         |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                          Router ID                            |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -106,8 +106,8 @@ class OSPFSerializer:
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                              ...                              |
     '''
-    def serializeOSPFDatabasePacket(ospfDatabasePacket):
-        returnValue = OSPFSerializer.serializeOSPFPacket(ospfDatabasePacket)
+    def serializeOSPFDatabaseHeader(ospfDatabaseHeader):
+        returnValue = OSPFSerializer.serializeOSPFHeader(ospfDatabaseHeader)
 
         return returnValue
 
@@ -115,7 +115,7 @@ class OSPFSerializer:
             0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |   Version #   |       3       |         Packet length         |
+       |   Version #   |       3       |         Header length         |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                          Router ID                            |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -135,8 +135,8 @@ class OSPFSerializer:
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                              ...                              |
     '''
-    def serializeOSPFLinkStatePacket(ospfLinkStatePacket):
-        returnValue = OSPFSerializer.serializeOSPFPacket(ospfLinkStatePacket)
+    def serializeOSPFLinkStateHeader(ospfLinkStateHeader):
+        returnValue = OSPFSerializer.serializeOSPFHeader(ospfLinkStateHeader)
 
         return returnValue
 
@@ -144,7 +144,7 @@ class OSPFSerializer:
         0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |   Version #   |       4       |         Packet length         |
+       |   Version #   |       4       |         Header length         |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                          Router ID                            |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -164,8 +164,8 @@ class OSPFSerializer:
        +-                                                            +-+
        |                              ...                              |
     '''
-    def serializeOSPFLinkStateUpdatePacket(ospfLinkStateUpdatePacket):
-        returnValue = OSPFSerializer.serializeOSPFPacket(ospfLinkStateUpdatePacket)
+    def serializeOSPFLinkStateUpdateHeader(ospfLinkStateUpdateHeader):
+        returnValue = OSPFSerializer.serializeOSPFHeader(ospfLinkStateUpdateHeader)
 
         return returnValue
 
@@ -173,7 +173,7 @@ class OSPFSerializer:
         0                   1                   2                   3
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-       |   Version #   |       5       |         Packet length         |
+       |   Version #   |       5       |         Header length         |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                          Router ID                            |
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -197,7 +197,7 @@ class OSPFSerializer:
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
        |                              ...                              |
     '''
-    def serializeOSPFLinkStateACKPacket(ospfLinkStateACKPacket):
-        returnValue = OSPFSerializer.serializeOSPFPacket(ospfLinkStateACKPacket)
+    def serializeOSPFLinkStateACKHeader(ospfLinkStateACKHeader):
+        returnValue = OSPFSerializer.serializeOSPFHeader(ospfLinkStateACKHeader)
 
         return returnValue
