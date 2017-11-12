@@ -3,7 +3,7 @@
 # Length          Length of the Header, in bytes, including the header.
 # RouterID        IP address of the router from which the Header originated.
 # AreaID          Identifier of the area in which the Header is traveling. Each OSPF Header is associated with a single
-#                 area. Headers traveling over a virtual link are labeled with the backbone area ID, 0.0.0.0. .
+#                area. Headers traveling over a virtual link are labeled with the backbone area ID, 0.0.0.0. .
 # Checksum        Fletcher checksum.
 # Authentication  (OSPFv2 only) Authentication scheme and authentication information.
 # InstanceID      (OSPFv3 only) Identifier used when there are multiple OSPFv3 realms configured on a link.

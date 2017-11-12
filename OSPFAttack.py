@@ -14,6 +14,8 @@ def main():
         print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
         sys.exit()
 
+    #sfd.sendto(packet, (dest_ip, 0))
+
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 from struct import *
+import NetworkUtils
 
 
 #    http://www.freesoft.org/CIE/RFC/1583/103.htm
@@ -19,13 +20,24 @@ from struct import *
 #   |                       Authentication                          |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def serializeOSPFHeader(ospf_header):
+    header = pack("!BBHLLHH",
+                       ospf_header.version,
+                       ospf_header.type,
+                       ospf_header.length,
+                       ospf_header.routerID,
+                       ospf_header.areaID,
+                       0,  # checksum will be computed later
+                       ospf_header.authType)
+
+    checksum = NetworkUtils.checksum(header)
+
     return pack("!BBHLLHHLL",
                 ospf_header.version,
                 ospf_header.type,
                 ospf_header.length,
                 ospf_header.routerID,
                 ospf_header.areaID,
-                ospf_header.checksum,
+                checksum,
                 ospf_header.authType,
                 ospf_header.authentication1,
                 ospf_header.authentication2)
