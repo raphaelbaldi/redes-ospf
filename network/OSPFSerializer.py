@@ -1,3 +1,4 @@
+from struct import *
 
 class OSPFSerializer:
     '''
@@ -20,18 +21,16 @@ class OSPFSerializer:
        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    '''
     def serializeOSPFPacket(ospfPacket):
-        returnValue = []
-        firstLine = ospfPacket.length & 65535 # Ensure only the first two bytes are filled
-        firstLine |= (((ospfPacket.version & 255) << 8) | (ospfPacket.type & 255)) << 16 # Most significative bytes
-        returnValue.append(firstLine)
-        returnValue.append(ospfPacket.routerID)
-        returnValue.append(ospfPacket.areadID)
-        forthLine = ospfPacket.authType
-        forthLine |= (ospfPacket.checksum & 65535) << 16
-        returnValue.append(forthLine)
-        returnValue.append(ospfPacket.authentication1)
-        returnValue.append(ospfPacket.authentication2)
-        return returnValue
+        return pack("!BBHLLHHLL",
+             ospfPacket.version,
+             ospfPacket.type,
+             ospfPacket.length,
+             ospfPacket.routerID,
+             ospfPacket.areaID,
+             ospfPacket.checksum,
+             ospfPacket.authType,
+             ospfPacket.authentication1,
+             ospfPacket.authentication2)
 
     '''
             0                   1                   2                   3
@@ -64,10 +63,16 @@ class OSPFSerializer:
        |                              ...                              |
     '''
     def serializeOSPFHelloPacket(ospfHelloPacket):
-        returnValue = OSPFSerializer.serializeOSPFPacket(ospfHelloPacket)
-
-
-        return returnValue
+        result = pack("!4sHBBL4s4s4s",
+                      ospfHelloPacket.networkMask,
+                      ospfHelloPacket.helloInterval,
+                      ospfHelloPacket.options,
+                      ospfHelloPacket.routerPriority,
+                      ospfHelloPacket.routerDeadInterval,
+                      ospfHelloPacket.designatedRouter,
+                      ospfHelloPacket.backupDesignatedRouter,
+                      ospfHelloPacket.neighbor)
+        return OSPFSerializer.serializeOSPFPacket(ospfHelloPacket) + result
 
     '''
             0                   1                   2                   3
@@ -196,4 +201,3 @@ class OSPFSerializer:
         returnValue = OSPFSerializer.serializeOSPFPacket(ospfLinkStateACKPacket)
 
         return returnValue
-    
