@@ -19,7 +19,7 @@ import NetworkUtils
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                       Authentication                          |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-def serializeOSPFHeader(ospf_header):
+def serializeOSPFHeader(ospf_header, data):
     header = pack("!BBHLLHH",
                        ospf_header.version,
                        ospf_header.type,
@@ -29,7 +29,7 @@ def serializeOSPFHeader(ospf_header):
                        0,  # checksum will be computed later
                        ospf_header.authType)
 
-    checksum = NetworkUtils.checksum(header)
+    checksum = NetworkUtils.checksum(header + data)
 
     return pack("!BBHLLHHLL",
                 ospf_header.version,
@@ -40,7 +40,7 @@ def serializeOSPFHeader(ospf_header):
                 checksum,
                 ospf_header.authType,
                 ospf_header.authentication1,
-                ospf_header.authentication2)
+                ospf_header.authentication2) + data
 
 
 #        0                   1                   2                   3
@@ -72,16 +72,16 @@ def serializeOSPFHeader(ospf_header):
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                              ...                              |
 def serializeOSPFHelloHeader(ospf_hello_header):
-    result = pack("!4sHBBL4s4s4s",
-                  ospf_hello_header.networkMask,
-                  ospf_hello_header.helloInterval,
-                  ospf_hello_header.options,
-                  ospf_hello_header.routerPriority,
-                  ospf_hello_header.routerDeadInterval,
-                  ospf_hello_header.designatedRouter,
-                  ospf_hello_header.backupDesignatedRouter,
-                  ospf_hello_header.neighbor)
-    return serializeOSPFHeader(ospf_hello_header) + result
+    hello_header = pack("!4sHBBL4s4s4s",
+                        ospf_hello_header.networkMask,
+                        ospf_hello_header.helloInterval,
+                        ospf_hello_header.options,
+                        ospf_hello_header.routerPriority,
+                        ospf_hello_header.routerDeadInterval,
+                        ospf_hello_header.designatedRouter,
+                        ospf_hello_header.backupDesignatedRouter,
+                        ospf_hello_header.neighbor)
+    return serializeOSPFHeader(ospf_hello_header, hello_header)
 
 
 #        0                   1                   2                   3
