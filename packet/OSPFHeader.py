@@ -7,20 +7,19 @@
 # Checksum        Fletcher checksum.
 # Authentication  (OSPFv2 only) Authentication scheme and authentication information.
 # InstanceID      (OSPFv3 only) Identifier used when there are multiple OSPFv3 realms configured on a link.
-class OSPFHeader:
-    def __init__(self, version, code, header_type, length, router_id, area_id, checksum, auth_type, authentication1,
-                 authentication2, instance_id):
+class OSPFHeader(object):
+    def __init__(self, version, code, header_type, length, router_id, area_id, auth_type, authentication1,
+                 authentication2):
         self.version = version
         self.code = code
         self.header_type = header_type
         self.length = length
         self.routerID = router_id
         self.areaID = area_id
-        self.checksum = checksum
+        self.checksum = 0 # computed later
         self.authType = auth_type
         self.authentication1 = authentication1
         self.authentication2 = authentication2
-        self.instanceID = instance_id
 
     def set_code(self, code):
         self.code = code

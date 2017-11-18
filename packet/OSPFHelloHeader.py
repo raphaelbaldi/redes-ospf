@@ -1,4 +1,4 @@
-import OSPFHeader
+from OSPFHeader import OSPFHeader
 
 
 # Network mask               (OSPFv2 only) Network mask associated with the interface.
@@ -14,11 +14,11 @@ import OSPFHeader
 # Neighbor                   IP addresses of the routers from which valid hello Headers have been received within the
 #                            time specified by the router dead interval.
 class OSPFHelloHeader(OSPFHeader):
-    def __init(self, version, length, router_id, area_id, checksum, auth_type, authentication1, authentication2,
-               instance_id, network_mask, hello_interval, options, router_priority, router_dead_interval,
+    def __init__(self, version, length, router_id, area_id, auth_type, authentication1, authentication2,
+               network_mask, hello_interval, options, router_priority, router_dead_interval,
                designated_router, backup_designated_router, neighbor):
-        super(OSPFHelloHeader, self).__init__(version, 0, 1, length, router_id, area_id, checksum, auth_type,
-                                              authentication1, authentication2, instance_id)
+        super(OSPFHelloHeader, self).__init__(version, 0, 1, length, router_id, area_id, auth_type,
+                                              authentication1, authentication2)
         self.networkMask = network_mask
         self.helloInterval = hello_interval
         self.options = options

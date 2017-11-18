@@ -22,18 +22,18 @@ import NetworkUtils
 def serializeOSPFHeader(ospf_header, data):
     header = pack("!BBHLLHH",
                        ospf_header.version,
-                       ospf_header.type,
+                       ospf_header.header_type,
                        ospf_header.length,
                        ospf_header.routerID,
                        ospf_header.areaID,
                        0,  # checksum will be computed later
                        ospf_header.authType)
 
-    checksum = NetworkUtils.checksum(header + data)
+    checksum = NetworkUtils.checksum(header)
 
     return pack("!BBHLLHHLL",
                 ospf_header.version,
-                ospf_header.type,
+                ospf_header.header_type,
                 ospf_header.length,
                 ospf_header.routerID,
                 ospf_header.areaID,
