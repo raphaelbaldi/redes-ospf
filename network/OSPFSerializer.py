@@ -1,3 +1,4 @@
+from _socket import inet_aton, htons
 from struct import *
 import NetworkUtils
 
@@ -20,24 +21,23 @@ import NetworkUtils
 #   |                       Authentication                          |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def serializeOSPFHeader(ospf_header, data):
-    header = pack("!BBHLLHH",
+    header = pack("!BBH4s4sHHLL",
                        ospf_header.version,
                        ospf_header.header_type,
                        ospf_header.length,
-                       ospf_header.routerID,
-                       ospf_header.areaID,
-                       0,  # checksum will be computed later
-                       ospf_header.authType)
+                       inet_aton(ospf_header.routerID),
+                       inet_aton(ospf_header.areaID),
+                       0, 0, 0, 0)  # checksum will be computed later
 
-    checksum = NetworkUtils.checksum(header)
+    checksum = NetworkUtils.checksum(header + data)
 
-    return pack("!BBHLLHHLL",
+    return pack("!BBH4s4sHHLL",
                 ospf_header.version,
                 ospf_header.header_type,
                 ospf_header.length,
-                ospf_header.routerID,
-                ospf_header.areaID,
-                checksum,
+                inet_aton(ospf_header.routerID),
+                inet_aton(ospf_header.areaID),
+                htons(checksum),
                 ospf_header.authType,
                 ospf_header.authentication1,
                 ospf_header.authentication2) + data
@@ -73,14 +73,14 @@ def serializeOSPFHeader(ospf_header, data):
 #   |                              ...                              |
 def serializeOSPFHelloHeader(ospf_hello_header):
     hello_header = pack("!4sHBBL4s4s4s",
-                        ospf_hello_header.networkMask,
+                        inet_aton(ospf_hello_header.networkMask),
                         ospf_hello_header.helloInterval,
                         ospf_hello_header.options,
                         ospf_hello_header.routerPriority,
                         ospf_hello_header.routerDeadInterval,
-                        ospf_hello_header.designatedRouter,
-                        ospf_hello_header.backupDesignatedRouter,
-                        ospf_hello_header.neighbor)
+                        inet_aton(ospf_hello_header.designatedRouter),
+                        inet_aton(ospf_hello_header.backupDesignatedRouter),
+                        inet_aton(ospf_hello_header.neighbor))
     return serializeOSPFHeader(ospf_hello_header, hello_header)
 
 
@@ -99,7 +99,7 @@ def serializeOSPFHelloHeader(ospf_hello_header):
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                       Authentication                          |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-#   |       0       |       0       |    Options    |0|0|0|0|0|I|M|MS
+#   |         Interface MTU         |    Options    |0|0|0|0|0|I|M|MS
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                     DD sequence number                        |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -115,7 +115,12 @@ def serializeOSPFHelloHeader(ospf_hello_header):
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                              ...                              |
 def serializeOSPFDatabaseHeader(ospf_database_header):
-    return serializeOSPFHeader(ospf_database_header)
+    database_header = pack("!HBBL",
+                           ospf_database_header.interface_mtu,
+                           ospf_database_header.options,
+                           ospf_database_header.control_bits,
+                           ospf_database_header.dd_sequence_number)
+    return serializeOSPFHeader(ospf_database_header, database_header)
 
 
 #        0                   1                   2                   3
