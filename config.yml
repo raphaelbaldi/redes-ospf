@@ -19,7 +19,7 @@ network:
 ospf:
   version: 2
   port: 89
-  multicast_all_routers: 224.0.0.1
+  multicast_all_routers: 224.0.0.2
   multicast_dvmrp_routers: 224.0.0.4
   multicast_ospf_routers: 224.0.0.5
   multicast_ospf_designated_routers: 224.0.0.6
