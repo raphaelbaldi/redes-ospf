@@ -16,7 +16,7 @@ class OSPFHeader(object):
         self.length = length
         self.routerID = router_id
         self.areaID = area_id
-        self.checksum = 0 # computed later
+        self.checksum = 0  # computed later
         self.authType = auth_type
         self.authentication1 = authentication1
         self.authentication2 = authentication2

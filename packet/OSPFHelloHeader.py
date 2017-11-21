@@ -15,8 +15,8 @@ from OSPFHeader import OSPFHeader
 #                            time specified by the router dead interval.
 class OSPFHelloHeader(OSPFHeader):
     def __init__(self, version, length, router_id, area_id, auth_type, authentication1, authentication2,
-               network_mask, hello_interval, router_priority, router_dead_interval,
-               designated_router, backup_designated_router, neighbor):
+                 network_mask, hello_interval, router_priority, router_dead_interval,
+                 designated_router, backup_designated_router, neighbor):
         super(OSPFHelloHeader, self).__init__(version, 0, 1, length, router_id, area_id, auth_type,
                                               authentication1, authentication2)
         self.networkMask = network_mask
@@ -31,6 +31,7 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     DN-bit
     '''
+
     def set_option_dn(self, value):
         if value:
             self.options |= 128
@@ -40,6 +41,7 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     O-bit
     '''
+
     def set_option_o(self, value):
         if value:
             self.options |= 64
@@ -49,6 +51,7 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     Demand circuits support
     '''
+
     def set_option_dc(self, value):
         if value:
             self.options |= 32
@@ -58,6 +61,7 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     Packet contains a LLS data block
     '''
+
     def set_option_l(self, value):
         if value:
             self.options |= 16
@@ -67,6 +71,7 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     NSSA support
     '''
+
     def set_option_np(self, value):
         if value:
             self.options |= 8
@@ -76,6 +81,7 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     Multicast capability
     '''
+
     def set_option_mc(self, value):
         if value:
             self.options |= 4
@@ -85,6 +91,7 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     External routing capability
     '''
+
     def set_option_e(self, value):
         if value:
             self.options |= 2
@@ -94,7 +101,8 @@ class OSPFHelloHeader(OSPFHeader):
     '''
     Multi-Topology capability
     '''
-    def set_option_e(self, value):
+
+    def set_option_multi_topology(self, value):
         if value:
             self.options |= 1
         else:

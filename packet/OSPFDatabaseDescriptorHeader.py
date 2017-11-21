@@ -15,9 +15,9 @@ from OSPFHeader import OSPFHeader
 #                            time specified by the router dead interval.
 class OSPFDatabaseDescriptorHeader(OSPFHeader):
     def __init__(self, version, length, router_id, area_id, auth_type, authentication1, authentication2,
-               interface_mtu, dd_sequence_number):
+                 interface_mtu, dd_sequence_number):
         super(OSPFDatabaseDescriptorHeader, self).__init__(version, 0, 2, length, router_id, area_id, auth_type,
-                                              authentication1, authentication2)
+                                                           authentication1, authentication2)
         self.interface_mtu = interface_mtu
         self.dd_sequence_number = dd_sequence_number
         self.options = 0
@@ -26,6 +26,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     DN-bit
     '''
+
     def set_option_dn(self, value):
         if value:
             self.options |= 128
@@ -35,6 +36,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     O-bit
     '''
+
     def set_option_o(self, value):
         if value:
             self.options |= 64
@@ -44,6 +46,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     Demand circuits support
     '''
+
     def set_option_dc(self, value):
         if value:
             self.options |= 32
@@ -53,6 +56,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     Packet contains a LLS data block
     '''
+
     def set_option_l(self, value):
         if value:
             self.options |= 16
@@ -62,6 +66,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     NSSA support
     '''
+
     def set_option_np(self, value):
         if value:
             self.options |= 8
@@ -71,6 +76,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     Multicast capability
     '''
+
     def set_option_mc(self, value):
         if value:
             self.options |= 4
@@ -80,6 +86,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     External routing capability
     '''
+
     def set_option_e(self, value):
         if value:
             self.options |= 2
@@ -89,7 +96,8 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     Multi-Topology capability
     '''
-    def set_option_e(self, value):
+
+    def set_option_multi_topology(self, value):
         if value:
             self.options |= 1
         else:
@@ -98,6 +106,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     Set the initial bit
     '''
+
     def set_control_initial_bit(self, value):
         if value:
             self.control_bits |= 4
@@ -107,6 +116,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     Set the more packets bit
     '''
+
     def set_control_more_bit(self, value):
         if value:
             self.control_bits |= 2
@@ -116,6 +126,7 @@ class OSPFDatabaseDescriptorHeader(OSPFHeader):
     '''
     Set the initial bit
     '''
+
     def set_control_master_slave_bit(self, value):
         if value:
             self.control_bits |= 1

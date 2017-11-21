@@ -1,7 +1,8 @@
+import string
 from _socket import inet_aton, htons
 from struct import *
 import NetworkUtils
-
+from packet import OSPFHeader
 
 #    http://www.freesoft.org/CIE/RFC/1583/103.htm
 #
@@ -20,23 +21,24 @@ import NetworkUtils
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                       Authentication                          |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-def serializeOSPFHeader(ospf_header, data):
-    header = pack("!BBH4s4sHHLL",
+def serialize_ospf_header(ospf_header, data):
+    # type: (OSPFHeader, string) -> string
+    header = pack("!BBHLLHHLL",
                        ospf_header.version,
                        ospf_header.header_type,
                        ospf_header.length,
-                       inet_aton(ospf_header.routerID),
-                       inet_aton(ospf_header.areaID),
+                       ospf_header.routerID,
+                       ospf_header.areaID,
                        0, 0, 0, 0)  # checksum will be computed later
 
     checksum = NetworkUtils.checksum(header + data)
 
-    return pack("!BBH4s4sHHLL",
+    return pack("!BBHLLHHLL",
                 ospf_header.version,
                 ospf_header.header_type,
                 ospf_header.length,
-                inet_aton(ospf_header.routerID),
-                inet_aton(ospf_header.areaID),
+                ospf_header.routerID,
+                ospf_header.areaID,
                 htons(checksum),
                 ospf_header.authType,
                 ospf_header.authentication1,
@@ -71,7 +73,7 @@ def serializeOSPFHeader(ospf_header, data):
 #   |                          Neighbor                             |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                              ...                              |
-def serializeOSPFHelloHeader(ospf_hello_header):
+def serialize_ospf_hello_header(ospf_hello_header):
     hello_header = pack("!4sHBBL4s4s4s",
                         inet_aton(ospf_hello_header.networkMask),
                         ospf_hello_header.helloInterval,
@@ -81,7 +83,7 @@ def serializeOSPFHelloHeader(ospf_hello_header):
                         inet_aton(ospf_hello_header.designatedRouter),
                         inet_aton(ospf_hello_header.backupDesignatedRouter),
                         inet_aton(ospf_hello_header.neighbor))
-    return serializeOSPFHeader(ospf_hello_header, hello_header)
+    return serialize_ospf_header(ospf_hello_header, hello_header)
 
 
 #        0                   1                   2                   3
@@ -120,7 +122,7 @@ def serializeOSPFDatabaseHeader(ospf_database_header):
                            ospf_database_header.options,
                            ospf_database_header.control_bits,
                            ospf_database_header.dd_sequence_number)
-    return serializeOSPFHeader(ospf_database_header, database_header)
+    return serialize_ospf_header(ospf_database_header, database_header)
 
 
 #        0                   1                   2                   3
@@ -145,8 +147,9 @@ def serializeOSPFDatabaseHeader(ospf_database_header):
 #   |                     Advertising Router                        |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                              ...                              |
-def serializeOSPFLinkStateHeader(ospf_link_state_header):
-    return serializeOSPFHeader(ospf_link_state_header)
+# def serialize_ospf_link_state_header(ospf_link_state_header):
+#   # TODO: implement link state header
+#    return serialize_ospf_header(ospf_link_state_header)
 
 
 #    0                   1                   2                   3
@@ -171,8 +174,9 @@ def serializeOSPFLinkStateHeader(ospf_link_state_header):
 #   |                  Link state advertisements                    |
 #   +-                                                            +-+
 #   |                              ...                              |
-def serializeOSPFLinkStateUpdateHeader(ospf_link_state_update_header):
-    return serializeOSPFHeader(ospf_link_state_update_header)
+# def serialize_ospf_link_state_update_header(ospf_link_state_update_header):
+#   # TODO: implement link state update header
+#   return serialize_ospf_header(ospf_link_state_update_header)
 
 
 #    0                   1                   2                   3
@@ -201,5 +205,6 @@ def serializeOSPFLinkStateUpdateHeader(ospf_link_state_update_header):
 #   |                                                               |
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 #   |                              ...                              |
-def serializeOSPFLinkStateACKHeader(ospf_link_state_ack_header):
-    return serializeOSPFHeader(ospf_link_state_ack_header)
+# def serialize_ospf_link_state_ack_header(ospf_link_state_ack_header):
+#    # TODO: implement link state ack header
+#    return serialize_ospf_header(ospf_link_state_ack_header)

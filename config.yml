@@ -1,3 +1,25 @@
-victimId: 100
-networkMask: 255.255.255.0
-broadcastIP: 254.0.0.0
+victim:
+  id: 3000
+  hello_interval: 10
+  dead_interval: 40
+  area_id: 0
+  auth_type: 0
+  auth1: 0
+  auth2: 0
+
+attacker:
+  priority: 1
+  interface_mtu: 0
+  wait_between_dd: 1
+  dd_count: 32
+
+network:
+  mask: 255.255.255.0
+
+ospf:
+  version: 2
+  port: 89
+  multicast_all_routers: 224.0.0.1
+  multicast_dvmrp_routers: 224.0.0.4
+  multicast_ospf_routers: 224.0.0.5
+  multicast_ospf_designated_routers: 224.0.0.6

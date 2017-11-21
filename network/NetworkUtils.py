@@ -18,7 +18,7 @@ def checksum(msg):
     return s
 
 
-def serializeIPHeader(ip_id, ip_proto, source_ip, dest_ip):
+def serialize_ip_header(ip_id, ip_proto, source_ip, dest_ip):
     # ip header fields
     ip_ihl = 5
     ip_ver = 4
@@ -46,8 +46,8 @@ def serializeIPHeader(ip_id, ip_proto, source_ip, dest_ip):
                 ip_daddr)
 
 
-def serializeTCPHeader(tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_fin, tcp_syn, tcp_rst, tcp_psh, tcp_ack, tcp_urg,
-                       source_ip, dest_ip, data):
+def serialize_tcp_header(tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_fin, tcp_syn, tcp_rst, tcp_psh, tcp_ack,
+                         tcp_urg, source_ip, dest_ip, data):
     # tcp header fields
     tcp_doff = 5  # 4 bit field, size of tcp header, 5 * 4 = 20 bytes
     tcp_window = socket.htons(5840)  # maximum allowed window size
