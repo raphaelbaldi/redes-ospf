@@ -23,21 +23,21 @@ from packet import OSPFHeader
 #   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 def serialize_ospf_header(ospf_header, data):
     # type: (OSPFHeader, string) -> string
-    header = pack("!BBHLLHHLL",
+    header = pack("!BBH4sLHHLL",
                        ospf_header.version,
                        ospf_header.header_type,
                        ospf_header.length,
-                       ospf_header.routerID,
+                       inet_aton(ospf_header.routerID),
                        ospf_header.areaID,
                        0, 0, 0, 0)  # checksum will be computed later
 
     checksum = NetworkUtils.checksum(header + data)
 
-    return pack("!BBHLLHHLL",
+    return pack("!BBH4sLHHLL",
                 ospf_header.version,
                 ospf_header.header_type,
                 ospf_header.length,
-                ospf_header.routerID,
+                inet_aton(ospf_header.routerID),
                 ospf_header.areaID,
                 htons(checksum),
                 ospf_header.authType,

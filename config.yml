@@ -1,5 +1,6 @@
 victim:
-  id: 3000
+  address: 10.32.143.207
+  id: 192.168.10.1
   hello_interval: 10
   dead_interval: 40
   area_id: 0
@@ -8,9 +9,10 @@ victim:
   auth2: 0
 
 attacker:
+  id: 192.168.10.157
   priority: 1
   interface_mtu: 0
-  wait_between_dd: 1
+  wait_between_dd: 2
   dd_count: 32
 
 network:
@@ -21,5 +23,5 @@ ospf:
   port: 89
   multicast_all_routers: 224.0.0.2
   multicast_dvmrp_routers: 224.0.0.4
-  multicast_ospf_routers: 224.0.0.5
+  multicast_ospf_routers: 10.32.143.207
   multicast_ospf_designated_routers: 224.0.0.6
